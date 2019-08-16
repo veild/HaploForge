@@ -1,65 +1,58 @@
 
-var Pedfile = {
+const Pedfile = {
 
 	__tmpfamdata : {}, // fid --> stored position
 	
-	import: function(text_unformatted){
+	import(text_unformatted) {
+        const text = text_unformatted.split('\n');
 
-		var text = text_unformatted.split('\n');
+        const fid_graphics = {}; // swap the graphics stuff for the serialparse method later.
 
-		var fid_graphics = {}; // swap the graphics stuff for the serialparse method later.
+        for (const line of text) {
+            if (line.length < 5 ){continue}
 
-		for (var l=0; l< text.length; l++)
-		{
-			var line = text[l];
-	
-			if (line.length < 5 ){continue};
-
-			// family lines first
-			if (line.startsWith("////")){
-				var fid_gfx = line.split("////")[1].split('\t');
+            // family lines first
+            if (line.startsWith("////")){
+				const fid_gfx = line.split("////")[1].split('\t');
 				fid_graphics[fid_gfx[0]] = JSON.parse(fid_gfx[1]);
 				continue;
 			}
 
-			// Split in to Data and Metadata parts		
-			var data_and_meta = line.split('//');
+            // Split in to Data and Metadata parts		
+            const data_and_meta = line.split('//');
 
-			//Handle Person info
-			var data_part = data_and_meta[0];
-			var people_info = data_part.trim().split(/\s+/).map(x => Number(x));
+            //Handle Person info
+            const data_part = data_and_meta[0];
+            const people_info = data_part.trim().split(/\s+/).map(x => Number(x));
 
-			var fam = people_info[0], id  = people_info[1],
-				pat = people_info[2], mat = people_info[3],
-				sex = people_info[4], aff = people_info[5];
+            const fam = people_info[0], id  = people_info[1], pat = people_info[2], mat = people_info[3], sex = people_info[4], aff = people_info[5];
 
-			var pers = new Person(id, sex, aff, mat, pat);
-			familyMapOps.insertPerc(pers, fam);
+            const pers = new Person(id, sex, aff, mat, pat);
+            familyMapOps.insertPerc(pers, fam);
 
-			// Handle Meta
-			if (data_and_meta.length === 2){
-				var meta = JSON.parse(data_and_meta[1])
+            // Handle Meta
+            if (data_and_meta.length === 2){
+				const meta = JSON.parse(data_and_meta[1]);
 
 				// Holds graphics, person's name, other meta
 				familyMapOps.getPerc(id,fam).stored_meta = meta;
 			}
-		}
+        }
 
-		// Family meta
-		for (var fid in fid_graphics){
-			var pos = fid_graphics[fid];
+        // Family meta
+        for (const fid in fid_graphics){
+			const pos = fid_graphics[fid];
 			Pedfile.__tmpfamdata[fid] = pos;  // passed onto init_graph
 		}
-	},
+    },
 
-	sanity_check: function(){
+	sanity_check() {
 		let unrelated = {}; //
 		let checked = {}; // key of checked pairs
 
-		familyMapOps.foreachfam(function(fid,fam_group){
-			familyMapOps.foreachperc(function(pid1, fid, perc1){
-				familyMapOps.foreachperc(function(pid2, fid, perc2)
-				{
+		familyMapOps.foreachfam((fid, fam_group) => {
+			familyMapOps.foreachperc((pid1, fid, perc1) => {
+				familyMapOps.foreachperc((pid2, fid, perc2) => {
 					if (pid1 === pid2){ return };
 
 					if (!(fid in checked)){
@@ -100,12 +93,12 @@ var Pedfile = {
 		// Go through unrelated connections and single out the main targets.
 		let mentions = {};
 
-		for (var fid in unrelated){
+		for (const fid in unrelated){
 			mentions[fid] = {};
-			for (var id1 in unrelated[fid]){
+			for (const id1 in unrelated[fid]){
 
 				let targets = unrelated[fid][id1];
-				for (var targ in targets){
+				for (const targ in targets){
 					if (!(targ in mentions[fid])){
 						mentions[fid][targ] = 0
 					}
@@ -117,13 +110,12 @@ var Pedfile = {
 		return mentions;
 	},
 
-	exportToTab: function(store_graphics){
+	exportToTab(store_graphics) {
 		exportToTab(Pedfile.export(store_graphics));
 	},
 
 
-	export: function(store_graphics)
-	{
+	export(store_graphics) {
 		let allconnected = Pedfile.sanity_check();
 		console.log(allconnected, Object.keys(allconnected), Object.keys(allconnected) > 0);
 
@@ -131,60 +123,58 @@ var Pedfile = {
 			utility.yesnoprompt(
 				"Unconnected Individuals Detected",
 				"These will be truncated from the pedigree. Continue with save?",
-				"Yes", function(){},
-				"No", function(){
-					return -1;					
-				}
+				"Yes", () => {},
+				"No", () => -1
 			);
 		}
 
-		var text = "";
+		let text = "";
 
 
 		// Family-header specific 
 		if (store_graphics)
 		{
-			var fid_array = []
-			uniqueGraphOps.foreachfam(function(fid,fam_group){
-				fid_array.push( "////" + fid +'\t' + JSON.stringify(fam_group.group.getAbsolutePosition()) );
+			const fid_array = [];
+			uniqueGraphOps.foreachfam((fid, fam_group) => {
+				fid_array.push( `////${fid}\t${JSON.stringify(fam_group.group.getAbsolutePosition())}` );
 			});
 			text += fid_array.join('\n');
 		}
 
 		// Person specific
-		familyMapOps.foreachperc(function(pid, fid, perc)
-		{
-			var array = [
+		familyMapOps.foreachperc((pid, fid, perc) => {
+			const array = [
 				fid, 
 				perc.id, 
 				perc.father.id || 0, 
 				perc.mother.id || 0, 
 				perc.gender, perc.affected
-			]			
+			];			
 
 			if (store_graphics){
-				var gfx = uniqueGraphOps.getNode(pid, fid);
+				const gfx = uniqueGraphOps.getNode(pid, fid);
 
 				if (gfx===-1 || gfx.graphics === null){
 					console.log("[Error]", pid,fid,"does not have any graphics...");
 				}
 				else {
-					var meta = gfx.graphics.getPosition();
+					const meta = gfx.graphics.getPosition();
 					meta.name = perc.name
 
 					array.push( "//", JSON.stringify(meta));
 				}
 			}
-			text += "\n"+ array.join('\t');
+			text += `\n${array.join('\t')}`;
 		});
 
 		return text;	
 	},
 
 
-	pedigreeChanged: function(){
-		var current_pedigree = Pedfile.export(true), /* local saves _always_ store graphics */
-			stored_pedigree = localStorage.getItem(localStor.ped_save);
+	pedigreeChanged() {
+		const current_pedigree = Pedfile.export(true),
+              /* local saves _always_ store graphics */
+              stored_pedigree = localStorage.getItem(localStor.ped_save);
 
 //		console.log("current", current_pedigree);
 //		console.log("stored", stored_pedigree);
@@ -202,4 +192,4 @@ var Pedfile = {
 		}
 		return false;
 	},
-}
+};

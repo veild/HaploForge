@@ -5,7 +5,7 @@ class Genehunter extends FileFormat {
 	
 	constructor(mode_init = null){
 
-		var haplo = {
+		const haplo = {
 			id: "ghm_haplo",
 			process: function(haplo_text){
 				debugGH.haplo = haplo_text;
@@ -15,7 +15,7 @@ class Genehunter extends FileFormat {
 			inferGenders : true // unless ped is uploaded!
 		}
 
-		var map = {
+		const map = {
 			id: "ghm_map",
 			process: function(map_text){
 				debugGH.map = map_text;
@@ -23,7 +23,7 @@ class Genehunter extends FileFormat {
 			}
 		}
 
-		var ped = {
+		const ped = {
 			id: "ghm_ped",
 			process: FileFormat.updateFamily
 		}
@@ -33,16 +33,14 @@ class Genehunter extends FileFormat {
 	}
 
 	static populateMarkerMap(text_unformatted){
-		var lines = text_unformatted.split('\n'),
-			current_chrom = null;
+		const lines = text_unformatted.split('\n');
+        let current_chrom = null;
 
 		// Skip header
-		var markers = [],
-			gps = [];
+		const markers = [], gps = [];
 
-		for (var l=1; l < lines.length; l++){
-			var line = lines[l].trim(),
-				tokens = line.split(/\s+/);
+		for (let l=1; l < lines.length; l++){
+			const line = lines[l].trim(), tokens = line.split(/\s+/);
 
 			if (line === ""){
 				continue;
@@ -55,8 +53,7 @@ class Genehunter extends FileFormat {
 				throw new Error("Chrom changed from "+ current_chrom + " to " + tokens[0])
 			}
 
-			var genpos = Number(tokens[1]),
-				marker = tokens[2].trim();
+			const genpos = Number(tokens[1]), marker = tokens[2].trim();
 
 
 			markers.push(marker);
@@ -74,13 +71,11 @@ class Genehunter extends FileFormat {
 
 	static populateFamilyAndHaploMap(text_unformatted){
 		
-		var lines = text_unformatted.split('\n'),
-			tmp_perc = null,
-			current_fam = null;
+		const lines = text_unformatted.split('\n');
+        let tmp_perc = null;
+        let current_fam = null;
 
-		for (var l=0; l < lines.length; l++)
-		{
-			var line = lines[l];
+		for (const line of lines){
 
 			// New family line
 			if (line.startsWith("*****")){
@@ -89,13 +84,11 @@ class Genehunter extends FileFormat {
 				continue;
 			}
 
-			var tokens = line.trim().split(/\s+/).map(function(a){
-				return parseInt(a);
-			});
+			const tokens = line.trim().split(/\s+/).map(a => parseInt(a));
 
 			// Second Allele, finish and insert into family ap
 			if (( line.startsWith("   ") || line.startsWith('\t\t')) && tmp_perc!==null){
-				var haplo2 = tokens;
+				const haplo2 = tokens;
 
 				tmp_perc.insertHaploData(haplo2);
 
@@ -105,10 +98,9 @@ class Genehunter extends FileFormat {
 			}
 
 			// First Allele and person data
-			var haplo1 = tokens.splice(4),
-				pdata = tokens;
+			const haplo1 = tokens.splice(4), pdata = tokens;
 
-			var person = new Person(
+			const person = new Person(
 				pdata[0], //id
 					  0, //gender -- undeclared, inferred from parentage
 				pdata[3], //affected
