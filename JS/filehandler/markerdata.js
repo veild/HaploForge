@@ -41,7 +41,7 @@ const MarkerData = {
 			MarkerData.padded[i] = (MarkerData.rs_array[i] + format).slice(0, MarkerData.maxlen_marker);
 
 			if (withgp) {
-				MarkerData.padded[i] += ' : ${(MarkerData.gp_array[i] + format).slice(0, 5)}'; // 5 sf
+				MarkerData.padded[i] += ` : ${(MarkerData.gp_array[i] + format).slice(0, 5)}`; // 5 sf
 			}
 		}
 		MarkerData.hasGPData = withgp;

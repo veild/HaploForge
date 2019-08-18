@@ -1,27 +1,23 @@
-
 class ButtonTutorial {
-
-	constructor(button, 
-				head, text,  
-				direction, 
-				onclick = null, 
-				styleprops = null){
-
-		console.assert(['top','bot','left','right'].indexOf(direction)!==-1, "not a valid direction" + direction);
-		console.assert(button!==null,                             "button does not exit" );
-		console.assert(button.children.length === 0,              "button already in use");
+	constructor(button, head, text, direction, onclick = null, styleprops = null) {
+		console.assert(
+			[ 'top', 'bot', 'left', 'right' ].indexOf(direction) !== -1,
+			`not a valid direction${direction}`
+		);
+		console.assert(button !== null, 'button does not exit');
+		console.assert(button.children.length === 0, 'button already in use');
 
 		//Directions: UDLR
 		this.box = ButtonTutorial.__makePointy(direction, head, text);
 
-		if (styleprops!==null){
-			for (var prop in styleprops){
+		if (styleprops !== null) {
+			for (const prop in styleprops) {
 				this.box.style[prop] = styleprops[prop];
 			}
 		}
 
 		// Shakey
-		var vertical = ['top','bot'].indexOf(direction)!==-1;
+		const vertical = [ 'top', 'bot' ].indexOf(direction) !== -1;
 		this.timer = ButtonTutorial.__shake(this.box, vertical);
 
 		// Lock to element
@@ -40,32 +36,31 @@ class ButtonTutorial {
 		this.button.style.zIndex = 999;
 		this.box.style.zIndex = 999;
 
-		var clicker = this.button.onclick;
+		const clicker = this.button.onclick;
 		this.box.onclick = this.__ondelete.bind(this, clicker);
-		this.button.onclick =   this.__ondelete.bind(this, clicker);
+		this.button.onclick = this.__ondelete.bind(this, clicker);
 	}
 
-	static __makePointy(direct, head, text){
-
-		var div1 = document.createElement('div');
-		div1.className = 'buttontutorial ' + direct;
+	static __makePointy(direct, head, text) {
+		const div1 = document.createElement('div');
+		div1.className = `buttontutorial ${direct}`;
 
 		// Now create and append to iDiv
-		var divtext = document.createElement('div');
+		const divtext = document.createElement('div');
 		divtext.className = 'buttontutorial_text';
 
-		var h2er = document.createElement('p');
+		const h2er = document.createElement('p');
 		h2er.innerText = head;
 
 		divtext.innerText = text;
 		divtext.insertBefore(h2er, divtext.firstChild);
 
-		div1.appendChild(divtext)
+		div1.appendChild(divtext);
 
 		return div1;
 	}
 
-	__ondelete(clicker = null){
+	__ondelete(clicker = null) {
 		this.box.parentNode.removeChild(this.box);
 		this.bg.parentNode.removeChild(this.bg);
 
@@ -73,72 +68,73 @@ class ButtonTutorial {
 
 		clearInterval(this.timer);
 
-		if (clicker !== null){
+		if (clicker !== null) {
 			clicker();
 		}
 	}
 
-	static __getposVert(box) {return Number(box.style.marginTop.split('px')[0]) || 0;}
-	static __getposHoriz(box){return Number(box.style.marginLeft.split('px')[0]) || 0;}
-	static __setposVert(box, am){
-		var num_unit_top = box.style.marginTop.split('px')[0];
-		box.style.marginTop = (num_unit_top + am) + 'px';
-
-		var num_unit_bot = box.style.marginBottom.split('px')[0];
-		box.style.marginBottom = (num_unit_bot + am) + 'px';
+	static __getposVert(box) {
+		return Number(box.style.marginTop.split('px')[0]) || 0;
 	}
-	static __setposHoriz(box, am){
-		var num_unit_left = box.style.marginLeft.split('px')[0];
-		box.style.marginLeft = (Number(num_unit_left) + am) + 'px';
+	static __getposHoriz(box) {
+		return Number(box.style.marginLeft.split('px')[0]) || 0;
+	}
+	static __setposVert(box, am) {
+		const num_unit_top = box.style.marginTop.split('px')[0];
+		box.style.marginTop = `${num_unit_top + am}px`;
 
-		var num_unit_right = box.style.marginRight.split('px')[0];
-		box.style.marginRight = (Number(num_unit_right) + am) + 'px';
+		const num_unit_bot = box.style.marginBottom.split('px')[0];
+		box.style.marginBottom = `${num_unit_bot + am}px`;
+	}
+	static __setposHoriz(box, am) {
+		const num_unit_left = box.style.marginLeft.split('px')[0];
+		box.style.marginLeft = `${Number(num_unit_left) + am}px`;
 
-//		console.log("marginL", num_unit_left, box.style.marginLeft);
-//		console.log("marginR", num_unit_right, box.style.marginRight);
+		const num_unit_right = box.style.marginRight.split('px')[0];
+		box.style.marginRight = `${Number(num_unit_right) + am}px`;
 
+		//		console.log("marginL", num_unit_left, box.style.marginLeft);
+		//		console.log("marginR", num_unit_right, box.style.marginRight);
 	}
 
+	static __shake(box, vertical) {
+        let getcurrent, setcurrent;
 
-	static __shake(box, vertical){
-
-		var getcurrent, setcurrent;
-
-		if (vertical){
-			getcurrent = ButtonTutorial.__getposVert;  setcurrent = ButtonTutorial.__setposVert;
+        if (vertical) {
+			getcurrent = ButtonTutorial.__getposVert;
+			setcurrent = ButtonTutorial.__setposVert;
+		} else {
+			getcurrent = ButtonTutorial.__getposHoriz;
+			setcurrent = ButtonTutorial.__setposHoriz;
 		}
-		else {
-			getcurrent = ButtonTutorial.__getposHoriz; setcurrent = ButtonTutorial.__setposHoriz;
-		}
 
-		// Movement
-		var move = 1, mult = 1.4, diff= 10;
+        // Movement
+        let move = 1;
 
-		var box_start  = getcurrent(box),
-			box_offset = box_start - diff;
+        const mult = 1.4;
+        const diff = 10;
 
-//		console.log("box_start", box_start, "box_offset", box_offset);
+        const box_start = getcurrent(box), box_offset = box_start - diff;
 
-		// Shimmy
-		var tim1 = setInterval(function(){
-			var current = getcurrent(box);
+        //		console.log("box_start", box_start, "box_offset", box_offset);
 
-		  	if (current <= box_offset ){
-		    	move = mult;
-//				console.log(current + " < " + box_offset, "moving " + move);
-		  	}
-		  	else if (current >= box_start ){
-		    	move = -mult;
-//				console.log(current + " >= " + box_offset, "moving " + move);
-		  	}
-		  	setcurrent(box, move );
-		}, 80)
+        // Shimmy
+        const tim1 = setInterval(() => {
+			const current = getcurrent(box);
 
-		return tim1
-	}
+			if (current <= box_offset) {
+				move = mult;
+				//				console.log(current + " < " + box_offset, "moving " + move);
+			} else if (current >= box_start) {
+				move = -mult;
+				//				console.log(current + " >= " + box_offset, "moving " + move);
+			}
+			setcurrent(box, move);
+		}, 80);
+
+        return tim1;
+    }
 }
-
-
 
 /* Depreciated function
 

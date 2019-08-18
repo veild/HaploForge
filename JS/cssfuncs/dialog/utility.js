@@ -1,132 +1,123 @@
+const messProps = {
+	_header: document.getElementById('message_head'),
+	_text: document.getElementById('message_text'),
+	_exit: document.getElementById('message_exit'),
+	_box: document.getElementById('message_props'),
+	_buttonrow: document.getElementById('message_buttonsrow'),
+	_yes: document.getElementById('message_yes'),
+	_no: document.getElementById('message_no'),
+	_inputrow: document.getElementById('message_inputrow'),
+	_input: document.getElementById('message_input'),
+	_submit: document.getElementById('message_submit'),
 
-
-var messProps = {
-	_header : document.getElementById('message_head'),
-	_text   : document.getElementById('message_text'),
-	_exit : document.getElementById('message_exit'),
-	_box : document.getElementById('message_props'),
-	_buttonrow : document.getElementById('message_buttonsrow'),
-	_yes : document.getElementById('message_yes'),
-	_no : document.getElementById('message_no'),
-	_inputrow : document.getElementById("message_inputrow"),
-	_input : document.getElementById("message_input"),
-	_submit : document.getElementById("message_submit"),
-
-	_aftercallbacks: function(){
+	_aftercallbacks() {
 		this.hide();
 		utility.hideBG();
-		this._inputrow.style.display = "block";
-		this._text.style.display = "block";
+		this._inputrow.style.display = 'block';
+		this._text.style.display = 'block';
 	},
 
-	hide: function(){ 
-		Keyboard.unpause()
-		this._box.style.display = "none";
+	hide() {
+		Keyboard.unpause();
+		this._box.style.display = 'none';
 		this._box.style.zIndex = -99;
 	},
 
-	show: function(){ 
-		Keyboard.pause()
-		this._box.style.display = "block";
+	show() {
+		Keyboard.pause();
+		this._box.style.display = 'block';
 		this._box.style.zIndex = 502;
 		this._input.focus();
 	},
 
-
-	display: function(header,text, exit_callback = null, yes_no_object = null, submit=false)
-	{
+	display(header, text, exit_callback = null, yes_no_object = null, submit = false) {
 		this.show();
 
 		// must occur after this.show();
-		utility.showBG(function(){
+		utility.showBG(() => {
 			messProps.hide();
 		});
 
 		this._header.innerHTML = header;
-		this._text.innerHTML   = text;
+		this._text.innerHTML = text;
 
 		/* On Exit */
-		this._exit.onclick = function(){
-			if (exit_callback !== null){exit_callback()};
+		this._exit.onclick = () => {
+			if (exit_callback !== null) {
+				exit_callback();
+			}
 			messProps._aftercallbacks();
 		};
 
 		/*Submit */
-		if (submit){
-			this._buttonrow.style.display = "none";
-			this._inputrow.style.display = "block";
-			
-			this._submit.value = "Submit";
-			var that = this;
-			this._submit.onclick = function(){
+		if (submit) {
+			this._buttonrow.style.display = 'none';
+			this._inputrow.style.display = 'block';
+
+			this._submit.value = 'Submit';
+			const that = this;
+			this._submit.onclick = () => {
 				submit(that._input.value);
 				that._exit.onclick();
-			}
+			};
 		}
-
 
 		/* Yes No*/
-		if (yes_no_object === null){
-			this._buttonrow.style.display= "none";
-			this._no.value   = this._yes.value   = "";
+		if (yes_no_object === null) {
+			this._buttonrow.style.display = 'none';
+			this._no.value = this._yes.value = '';
 			this._no.onclick = this._yes.onclick = null;
-		}
-		else
-		/* Input box */
-		{
-			this._buttonrow.style.display = "block";
-			this._inputrow.style.display = "none";
+		} else {
+			/* Input box */
+			this._buttonrow.style.display = 'block';
+			this._inputrow.style.display = 'none';
 
-			if (yes_no_object.yes !== null)
-			{
+			if (yes_no_object.yes !== null) {
 				this._yes.value = yes_no_object.yes;
-				this._yes.onclick = function()
-				{
+				this._yes.onclick = () => {
 					yes_no_object.yescallback();
 					messProps._aftercallbacks();
 				};
-			};
+			}
 
-			if (yes_no_object.no !== null)
-			{
+			if (yes_no_object.no !== null) {
 				this._no.value = yes_no_object.no;
-				this._no.onclick = function()
-				{
+				this._no.onclick = () => {
 					yes_no_object.nocallback();
 					messProps._aftercallbacks();
-				}
-			};
-
+				};
+			}
 		}
 	},
 
-	prompt: function(header, text, yes, onYes, no, onNo)
-	{
-		var promptcallback = { 
-			yes: yes, yescallback: onYes,
-			no : no ,  nocallback: onNo
-		}
+	prompt(header, text, yes, onYes, no, onNo) {
+		const promptcallback = {
+			yes: yes,
+			yescallback: onYes,
+			no: no,
+			nocallback: onNo
+		};
 
-		this._inputrow.style.display = "none";
-		this.display(header,text, null, promptcallback, false);
+		this._inputrow.style.display = 'none';
+		this.display(header, text, null, promptcallback, false);
 	},
 
-	input: function(header, callback){
-		this._text.style.display = "none";
-		this._text.value = "";
+	input(header, callback) {
+		this._text.style.display = 'none';
+		this._text.value = '';
 
-		var that = this;
+		const that = this;
 
-		that.display(header, "", null, null, callback);
+		that.display(header, '', null, null, callback);
 		/*function(val){
 			console.log(val);
 			callback(val.innerHTML);
 			//messProps._aftercallbacks();
 		});*/
-	},
+	}
 
 	/* do not use
-	inputMulti: function(header, input_html, submit_callback){
+	inputMulti(header, input_html, submit_callback){
 		// input_array : [label,input obj]
 		this._text.style.display = "none";
 		this._text.value = "";
@@ -144,93 +135,88 @@ var messProps = {
 			}, null, submit_callback
 		);
 	}*/
+};
 
-}
-
-
-var statusProps = {
+const statusProps = {
 	_box: document.getElementById('status_props'),
 	_header: document.getElementById('status_head'),
 	_message: document.getElementById('status_text'),
 
-	hide: function(){ 
-		this._box.style.display = "none";
+	hide() {
+		this._box.style.display = 'none';
 	},
-	show: function(){ 
-		this._box.style.display = "block";
+	show() {
+		this._box.style.display = 'block';
 		this._box.style.opacity = 1;
 		this._box.style.zIndex = 503;
 	},
 
-	_fade: function(step=30){
-		var op = 1;
-		var timer = setInterval(function(){
-			if (op < 0.1){
+	_fade(step = 30) {
+		let op = 1;
+		const timer = setInterval(() => {
+			if (op < 0.1) {
 				clearInterval(timer);
 				statusProps.hide();
 			}
 			statusProps._box.style.opacity = op;
 			op -= 0.1;
-		}, step)
+		}, step);
 	},
 
-	display: function(header,details, timeUntilFade=1.5, fadeStep=50){
+	display(header, details, timeUntilFade = 1.5, fadeStep = 50) {
 		// Don't change to "this", because utility.notify defers what 'this' is
 		statusProps.show();
 
 		statusProps._header.innerHTML = header;
 		statusProps._message.innerHTML = details;
 
-		setTimeout( function(){
+		setTimeout(() => {
 			statusProps._fade(fadeStep);
 		}, timeUntilFade * 1000);
 	}
-}
+};
 
-
-
-var utility = {
+const utility = {
 	_bg: document.getElementById('modal_bg'),
 
-	focus: function(){
+	focus() {
 		this.focus();
 	},
 
-	yesnoprompt: function(title, message, yes, onYes, no, onNo){
+	yesnoprompt(title, message, yes, onYes, no, onNo) {
 		// Own method drop in?
 		messProps.prompt(title, message, yes, onYes, no, onNo);
 	},
 
-	inputprompt: function(title, callback){
+	inputprompt(title, callback) {
 		messProps.input(title, callback);
 	},
 
 	notify: statusProps.display,
 
-	getMouseXY: function(){
+	getMouseXY() {
 		return stage.getPointerPosition();
 	},
 
-	showBG: function(callback = null)
-	{
-		utility._bg.style.display = "block";
+	showBG(callback = null) {
+		utility._bg.style.display = 'block';
 
 		// This property is not updated until later, so showBG
 		// MUST be called AFTER the messProps._box is set to visible.
-		var messZ = messProps._box.style.zIndex;
+		const messZ = messProps._box.style.zIndex;
 		utility._bg.style.zIndex = messZ; /// get Zindex of messPrompt solid
 
-		if (callback !== null){
-			utility._bg.onclick = function(){
+		if (callback !== null) {
+			utility._bg.onclick = () => {
 				callback();
 				utility.hideBG();
 				utility._bg.onclick = null;
-			}
+			};
 		}
 	},
 
-	hideBG: function(){
-		this._bg.style.display = "none";
+	hideBG() {
+		this._bg.style.display = 'none';
 		this._bg.style.zIndex = -99;
 	}
-}
+};

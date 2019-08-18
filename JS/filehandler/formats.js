@@ -1,5 +1,3 @@
-'use strict';
-
 const localStor = {
 	ped_save: 'ped_data',
 	ped_type: 'ped_type',

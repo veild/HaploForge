@@ -134,7 +134,7 @@ class Merlin extends FileFormat {
 			}
 
             for (let a = 0; a < multiple_alleles.length; a++) {
-				const alleles = multiple_alleles[a],
+				const alleles = multiple_alleles[a];
                 let left_right = null;
 
                 if (!flow) {

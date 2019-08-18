@@ -40,7 +40,7 @@ class PromiseQueue {
 						task(e.target.result);
 						resolve();
 					} catch (e) {
-						reject('${file.name} is not a ${type}');
+						reject(`${file.name} is not a ${type}`);
 					}
 				};
 				fr.readAsText(file);
