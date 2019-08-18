@@ -1,81 +1,65 @@
-
-
 class PromiseQueue {
-
-	constructor(jobfunc){
+	constructor(jobfunc) {
 		this.promise = Promise.resolve();
 		this.generaltask = jobfunc;
 	}
 
-	
-	addJob(job){
-		console.log("---Queuing:", job.file.name)
-		
-		var that = this;
+	addJob(job) {
+		console.log('---Queuing:', job.file.name);
 
-		this.promise = this.promise.then(function(){
-			console.log("---Dispatching:", job.file.name);
+		const that = this;
+
+		this.promise = this.promise.then(() => {
+			console.log('---Dispatching:', job.file.name);
 			return that.generaltask(job);
 		});
 	}
 
-
 	// general task, as set externally to constructor
-	static pFileRead(fileprops){
-		var file = fileprops.file,
-			task = fileprops.task,
-			type = fileprops.type,
-			fed_data = fileprops.fed_data || false;
+	static pFileRead(fileprops) {
+		const file = fileprops.file,
+			  task = fileprops.task,
+			  type = fileprops.type,
+			  fed_data = fileprops.fed_data || false;
 
 		return new Promise((resolve, reject) => {
-
-			if (fed_data){
+			if (fed_data) {
 				//console.log("")
 				try {
-					task(fed_data)
+					task(fed_data);
 					resolve();
 				} catch (e) {
-					console.log("error", e);
-					reject("Generated data failed to process")
+					console.log('error', e);
+					reject('Generated data failed to process');
 				}
-			}
+			} else {
+				const fr = new FileReader();
 
-			else {
-				var fr = new FileReader();
-				
-				fr.onload = function(e){
+				fr.onload = e => {
 					try {
-			    		task(e.target.result);
-		    			resolve();
-
-		    		} catch(e){
-		    			reject(file.name + " is not a " + type);
-		    		}
-		    	}
+						task(e.target.result);
+						resolve();
+					} catch (e) {
+						reject('${file.name} is not a ${type}');
+					}
+				};
 				fr.readAsText(file);
 			}
 		});
 	}
 
+	exec(finishfunc) {
+		this.promise.then(finishfunc).catch(errors => {
+			MainButtonActions.exitToMenu();
 
-	exec(finishfunc)
-	{
-		this.promise.then( finishfunc ).catch(
-			function(errors){
-				MainButtonActions.exitToMenu();
-
-				if (BenchStopwatch.__timeStart !== null ){
-					BenchStopwatch.terminate();
-				}
-
-				utility.notify("Check your inputs", errors, 10);
+			if (BenchStopwatch.__timeStart !== null) {
+				BenchStopwatch.terminate();
 			}
-		);
+
+			utility.notify('Check your inputs', errors, 10);
+		});
 	}
 }
-
-
-
 
 // Works, but convoluted
 

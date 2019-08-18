@@ -1,94 +1,88 @@
-var fileSelector = {
+const fileSelector = {
+	__initialised: false,
 
-  __initialised: false,
+	_container: document.getElementById('filebox'),
+	_div: document.getElementById('fileselector'),
+	_close: document.getElementById('filebox_close'),
 
-  _container: document.getElementById('filebox'),
-  _div: document.getElementById('fileselector'),
-  _close: document.getElementById("filebox_close"),
+	_boxpref: 'box_',
+	_subpref: 'submit_',
+	_haplosuff: '_haplo',
+	_mapsuff: '_map',
 
-  _boxpref: "box_",
-  _subpref: "submit_",
-  _haplosuff: "_haplo",
-  _mapsuff: "_map",
+	formats: {
+		// must match option values
+		allegro: 'allegro',
+		genehunter: 'ghm',
+		simwalk: 'sw',
+		merlin: 'merlin',
+		null: 'null'
+	},
+	// Song 9 week 7
+	_getBox(progname) {
+		return document.getElementById(fileSelector._boxpref + progname);
+	},
 
-  formats: { // must match option values
-    "allegro": "allegro",
-    "genehunter": "ghm",
-    "simwalk": "sw",
-    "merlin": "merlin",
-    "null":"null"
-  },
-  // Song 9 week 7
-  _getBox(progname) {
-    return document.getElementById(fileSelector._boxpref + progname);
-  },
+	_getHaplo(progname) {
+		return document.getElementById(progname + fileSelector._haplosuff);
+	},
 
-  _getHaplo(progname) {
-    return document.getElementById(progname + fileSelector._haplosuff);
-  },
+	_getMap(progname) {
+		return document.getElementById(progname + fileSelector._mapsuff);
+	},
 
-  _getMap(progname) {
-    return document.getElementById(progname + fileSelector._mapsuff);
-  },
+	_getSubmit(progname) {
+		return document.getElementById(fileSelector._subpref + progname);
+	},
 
-  _getSubmit(progname){
-    return document.getElementById(fileSelector._subpref + progname);
-  },
+	_initSubmits() {
+		for (const format in fileSelector.formats) {
+			const val = fileSelector.formats[format], submit = fileSelector._getSubmit(val);
 
-  _initSubmits(){
-    for (var format in fileSelector.formats){
-      var val = fileSelector.formats[format],
-          submit = fileSelector._getSubmit(val);
+			if (format in init.haploview) {
+				submit.onclick = init.haploview[format];
+			}
+		}
+	},
 
+	selectProg(progname) {
+		for (const format in fileSelector.formats) {
+			const value = fileSelector.formats[format];
+			if (format === progname) {
+				fileSelector._getBox(value).style.display = '';
+			} else {
+				fileSelector._getBox(value).style.display = 'none';
+			}
+		}
+	},
 
-      if (format in init.haploview){
-        submit.onclick = init.haploview[format];       
-      }
-    }
-  },
+	init() {
+		fileSelector._container.style.display = 'block';
 
+		utility.showBG(); // must occur AFTER
 
-  selectProg(progname) {
-    for (var format in fileSelector.formats) {
-      var value = fileSelector.formats[format];
-      if (format === progname) {
-        fileSelector._getBox(value).style.display = "";
-      } else {
-        fileSelector._getBox(value).style.display = "none";
-      }
-    }
-  },
+		fileSelector._div.focus();
 
-  init() {
-    fileSelector._container.style.display = "block"
+		if (!fileSelector.__initialised) {
+			function change() {
+				fileSelector.selectProg(this.value);
+			}
 
-    utility.showBG(); // must occur AFTER
+			fileSelector._div.onchange = change;
+			fileSelector._div.onkeyup = change;
 
-    fileSelector._div.focus();
+			fileSelector._close.onclick = fileSelector.end;
 
+			fileSelector._initSubmits();
 
-    if (!fileSelector.__initialised)
-    {
-      function change() {
-        fileSelector.selectProg(this.value);
-      };
+			fileSelector.__initialised = true;
+		}
 
-      fileSelector._div.onchange = change;
-      fileSelector._div.onkeyup = change;
+		fileSelector.selectProg(fileSelector._div.value);
+	},
 
-      fileSelector._close.onclick = fileSelector.end;
-
-      fileSelector._initSubmits();
-      
-
-      fileSelector.__initialised = true;
-    }
-
-    fileSelector.selectProg(fileSelector._div.value);
-  },
-
-  end(){
-    utility.hideBG();
-    fileSelector._container.style.display = "none";
-  }
-}
+	end() {
+		utility.hideBG();
+		fileSelector._container.style.display = 'none';
+	}
+};

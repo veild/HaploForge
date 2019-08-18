@@ -19,30 +19,31 @@ class Simwalk extends FileFormat {
 	}
 
 	static populateFamHaploAndDesc(text_unformatted, use_descent = false) {
-        const lines = text_unformatted.split('\n');
+		const lines = text_unformatted.split('\n');
 
-        let marker_header_found = false, pedname_header_found = false;
+		let marker_header_found = false,
+			pedname_header_found = false;
 
-        // Populate Marker
-        const markers = [], genepos = [];
+		// Populate Marker
+		const markers = [],
+			genepos = [];
 
+		for (let line of lines) {
+			// console.log(line)
 
-        for (let line of lines) {
-            // console.log(line)
-
-            if (line.startsWith('Marker')) {
+			if (line.startsWith('Marker')) {
 				//console.log("found marker line")
 				marker_header_found = true;
 				continue;
 			}
 
-            if (line.startsWith('Pedigree Name')) {
+			if (line.startsWith('Pedigree Name')) {
 				//console.log("found pedigree line")
 				pedname_header_found = true;
 				break;
 			}
 
-            if (marker_header_found) {
+			if (marker_header_found) {
 				if (!pedname_header_found) {
 					if (!line.startsWith(' ')) {
 						// console.log("found marker line!", line);
@@ -52,26 +53,26 @@ class Simwalk extends FileFormat {
 					}
 				}
 			}
-        }
+		}
 
-        MarkerData.addMarkers(markers);
-        MarkerData.addGenePos(genepos);
+		MarkerData.addMarkers(markers);
+		MarkerData.addGenePos(genepos);
 
-        // console.log("finished marker data");
+		// console.log("finished marker data");
 
-        //Ped Name
-        let dashedlines_found = false;
+		//Ped Name
+		let dashedlines_found = false;
 
-        const tmp = {
-            _fam: null,
-            _perc: null,
-            _allpat: [], // alleles
-            _allmat: [],
-            _decpat: [], // descent
-            _decmat: []
-        };
+		const tmp = {
+			_fam: null,
+			_perc: null,
+			_allpat: [], // alleles
+			_allmat: [],
+			_decpat: [], // descent
+			_decmat: []
+		};
 
-        function insertDat(tmp) {
+		function insertDat(tmp) {
 			if (tmp._allpat.length > 0) {
 				// console.log("appending haplo data to", tmp_perc.id)
 				tmp._perc.insertHaploData(tmp._allpat);
@@ -91,9 +92,8 @@ class Simwalk extends FileFormat {
 			}
 		}
 
-        for (let line of lines) {
-			
-            if (line.startsWith('________')) {
+		for (let line of lines) {
+			if (line.startsWith('________')) {
 				// Flush data from last perc if new fam found
 				if (tmp._perc !== null) {
 					insertDat(tmp);
@@ -103,7 +103,7 @@ class Simwalk extends FileFormat {
 				continue;
 			}
 
-            if (dashedlines_found && !line.startsWith(' ')) {
+			if (dashedlines_found && !line.startsWith(' ')) {
 				const fam = line.split('(')[0].trim();
 				tmp._fam = fam;
 				dashedlines_found = false;
@@ -111,14 +111,18 @@ class Simwalk extends FileFormat {
 				continue;
 			}
 
-            let tokens = line.trim().split(/\s+/);
-            // console.log(tokens.length, tokens)
+			let tokens = line.trim().split(/\s+/);
+			// console.log(tokens.length, tokens)
 
-            // Person Data
-            if (tmp._fam !== null && tokens.length === 5) {
+			// Person Data
+			if (tmp._fam !== null && tokens.length === 5) {
 				insertDat(tmp);
 
-				const id = parseInt(tokens[0]), father_id = parseInt(tokens[1]), mother_id = parseInt(tokens[2]), gender = parseInt(tokens[3]), affected = parseInt(tokens[4]);
+				const id = parseInt(tokens[0]),
+					father_id = parseInt(tokens[1]),
+					mother_id = parseInt(tokens[2]),
+					gender = parseInt(tokens[3]),
+					affected = parseInt(tokens[4]);
 
 				const perc = new Person(id, gender, affected, mother_id, father_id);
 				// console.log("found new perc", perc)
@@ -129,8 +133,8 @@ class Simwalk extends FileFormat {
 				//continue
 			}
 
-            //Allele Data
-            if (tmp._fam !== null && tmp._perc !== null && tokens.length === 6) {
+			//Allele Data
+			if (tmp._fam !== null && tmp._perc !== null && tokens.length === 6) {
 				tokens = tokens.map((x) => parseInt(x));
 
 				tmp._allpat.push(tokens[0]);
@@ -141,8 +145,8 @@ class Simwalk extends FileFormat {
 					tmp._decmat.push(tokens[3]);
 				}
 			}
-        }
-    }
+		}
+	}
 
 	static populateMarkerMap(text_unformatted) {}
 }
