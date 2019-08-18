@@ -1,9 +1,7 @@
-
-var init = {
-
-	clearMaps: function(){
+const init = {
+	clearMaps() {
 		familyDraw.active_fam_group = null;
-		
+
 		FounderColor.clear();
 		GlobalLevelGrid.clear();
 		MarkerData.clear();
@@ -11,32 +9,30 @@ var init = {
 		uniqueGraphOps.clear();
 	},
 
-	haploview : {
-
-		allegro : function(){
-			(new Allegro());
+	haploview: {
+		allegro() {
+			new Allegro();
 		},
 
-		genehunter: function(){
-			(new Genehunter()); // yeah "new" is required...
-								// gc does its job
-								// intergrate the latests changes
+		genehunter() {
+			new Genehunter(); // yeah "new" is required...
+			// gc does its job
+			// intergrate the latests changes
 		},
 
-		simwalk: function(){
-			(new Simwalk());
+		simwalk() {
+			new Simwalk();
 		},
 
-		merlin: function(){
-			(new Merlin());
+		merlin() {
+			new Merlin();
 		}
 	},
 
-	pedcreate : function(){
+	pedcreate() {
 		HaploPedProps.init();
 		graphInitPos(nodeSize + 10, grid_rezY, true);
 	}
-}
-
+};
 
 MainPageHandler.defaultload();
