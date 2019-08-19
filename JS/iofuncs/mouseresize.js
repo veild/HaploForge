@@ -1,53 +1,47 @@
-
-var MouseResize = {
-
-	resize_modes : {
+const MouseResize = {
+	resize_modes: {
 		pedcreate: ModeTracker.modes.pedcreate,
-		haploview: ModeTracker.modes.haploview,
+		haploview: ModeTracker.modes.haploview
 	},
 
-	_prevwheelstate : 0,
-	_scale : 1,
+	_prevwheelstate: 0,
+	_scale: 1,
 
-	_wheelHandler: function(event){
-
-		var delta = event.detail;
-		if (delta === 0){
-			delta = (event.deltaY > 0)?-0.1:0.1;
+	_wheelHandler(event) {
+		let delta = event.detail;
+		if (delta === 0) {
+			delta = event.deltaY > 0 ? -0.1 : 0.1;
 		}
 
-		var wheelstatechanged = false;
+		let wheelstatechanged = false;
 
-		if ( (delta > 0 && MouseResize._prevwheelstate < 0)
-		  || (delta < 0 && MouseResize._prevwheelstate > 0))
-		{
+		if ((delta > 0 && MouseResize._prevwheelstate < 0) || (delta < 0 && MouseResize._prevwheelstate > 0)) {
 			wheelstatechanged = true;
 		}
 
-		if (!wheelstatechanged){
+		if (!wheelstatechanged) {
 			let new_scale = main_layer.getScale().x + delta;
-			if (new_scale < 0.1){ new_scale = 0.1;}
-			
+			if (new_scale < 0.1) {
+				new_scale = 0.1;
+			}
+
 			main_layer.setScale({
-				x : new_scale, 
-				y : new_scale
+				x: new_scale,
+				y: new_scale
 			});
-			utility.notify("Scale", new_scale.toFixed(1))
+			utility.notify('Scale', new_scale.toFixed(1));
 			main_layer.draw();
 		}
-		MouseResize._prevwheelstate = delta
+		MouseResize._prevwheelstate = delta;
 	},
 
-	on : function(handler)
-	{
-		MouseWheel.on(  MouseResize._wheelHandler );
-		stage.setDraggable(true)
+	on(handler) {
+		MouseWheel.on(MouseResize._wheelHandler);
+		stage.setDraggable(true);
 	},
 
-	off: function(handler)
-	{
-		MouseWheel.off( MouseResize._wheelHandler );
-		stage.setDraggable(false)
+	off(handler) {
+		MouseWheel.off(MouseResize._wheelHandler);
+		stage.setDraggable(false);
 	}
-}
-
+};
