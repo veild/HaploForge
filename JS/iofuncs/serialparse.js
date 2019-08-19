@@ -137,12 +137,13 @@ const SerialParse = {
 
 			console.groupCollapsed('Serial Parse Import');
 
+			
 			for (const line of lines) {
 				if (line.startsWith(SerialParse.All._delims.marker)) {
-					var data = line.split(SerialParse.All._delims.marker)[1];
+					let data = line.split(SerialParse.All._delims.marker)[1];
 					SerialParse.Marker.import(data);
 				} else if (line.startsWith(SerialParse.All._delims.colors)) {
-					var data = line.split(SerialParse.All._delims.colors)[1];
+					let data = line.split(SerialParse.All._delims.colors)[1];
 					SerialParse.HGroups.import(data);
 				} else if (line.startsWith(SerialParse.All._delims.begin)) {
 					// Fam data
