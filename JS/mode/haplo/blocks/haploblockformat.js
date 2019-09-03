@@ -1,31 +1,29 @@
+const HaploBlockFormat = {
+	hasGPData(show) {
+		HaploBlockFormat.format.textprops.x = show ? -85 : -37;
+		HaploWindow._group.setX(show ? 45 : 0);
 
-var HaploBlockFormat = {
-
-	hasGPData(show){
-		HaploBlockFormat.format.textprops.x = show?-85:-37;
-		HaploWindow._group.setX(show?45:0);
-
-		HaploWindow._left.setX(show?-40:10);
-		HaploWindow._left.setWidth(show?120:65)
+		HaploWindow._left.setX(show ? -40 : 10);
+		HaploWindow._left.setWidth(show ? 120 : 65);
 	},
 
 	format: {},
 
-	__default : {
-		textprops : {
+	__default: {
+		textprops: {
 			x: -38,
-			y: -nodeSize*2,
+			y: -nodeSize * 2,
 			fontFamily: haploblock_settings.font_family,
 			fontSize: 10,
 			fill: 'black'
 		},
-		blockprops : {
+		blockprops: {
 			width: haploblock_spacers.block_width_px
 		}
 	},
 
-	__fancy : {
-/*		textprops : {
+	__fancy: {
+		/*		textprops : {
 			strokeWidth: 0.001,
 			stroke: 'white',
 			shadowColor: 'black',
@@ -39,33 +37,30 @@ var HaploBlockFormat = {
 		}*/
 	},
 
-
-	clearFormat : function(){
-		HaploBlockFormat.format["textprops"] = {};
-		HaploBlockFormat.format["blockprops"] = {};
+	clearFormat() {
+		HaploBlockFormat.format['textprops'] = {};
+		HaploBlockFormat.format['blockprops'] = {};
 	},
 
-	applyDefault: function(){
-
+	applyDefault() {
 		HaploBlockFormat.clearFormat();
 
-		for (var prop_super in HaploBlockFormat.__default){
+		for (const prop_super in HaploBlockFormat.__default) {
 			HaploBlockFormat.format[prop_super] = {};
 
-			for (var prop in HaploBlockFormat.__default[prop_super]){
+			for (const prop in HaploBlockFormat.__default[prop_super]) {
 				HaploBlockFormat.format[prop_super][prop] = HaploBlockFormat.__default[prop_super][prop];
 			}
 		}
 	},
 
-	applyFancy: function(){
-	
+	applyFancy() {
 		HaploBlockFormat.applyDefault();
 
-		for (var prop_super in HaploBlockFormat.__fancy){
-			for (var prop in HaploBlockFormat.__fancy[prop_super]){
+		for (const prop_super in HaploBlockFormat.__fancy) {
+			for (const prop in HaploBlockFormat.__fancy[prop_super]) {
 				HaploBlockFormat.format[prop_super][prop] = HaploBlockFormat.__fancy[prop_super][prop];
 			}
 		}
 	}
-}
+};

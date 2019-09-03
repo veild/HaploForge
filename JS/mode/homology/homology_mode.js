@@ -1,44 +1,40 @@
-
-var HomologyMode = {
-
+const HomologyMode = {
 	selected_for_homology: null,
 
-	_exit : null, //set by init and destroyed by quit
-	_active : false,
+	_exit: null, //set by init and destroyed by quit
+	_active: false,
 
-	minexten : 0,
-	minscore : 0,
-	type : null,
+	minexten: 0,
+	minscore: 0,
+	type: null,
 
-
-	init(){
+	init() {
 		ButtonModes.setToHomologyMode();
 
 		HomologyMode._active = true;
 		HaploWindow._exit.hide();
 
 		HomologyMode._exit = addExitButton(
-			{x: 20,
-			 y: 20},
-			 HomologyMode.quit,
-			 0
+			{
+				x: 20,
+				y: 20
+			},
+			HomologyMode.quit,
+			0
 		);
-		HomologySelectionMode.sub_select_group.add(
-			HomologyMode._exit
-		);
+		HomologySelectionMode.sub_select_group.add(HomologyMode._exit);
 
 		HomologyButtons.init();
 	},
 
-	quit: function()
-	{
+	quit() {
 		HomologyMode._active = false;
 
 		HomologyMode._exit.destroy();
 
 		HomologySelectionMode.cleanup();
 
-		HomologyButtons._group.style.display = "none";
+		HomologyButtons._group.style.display = 'none';
 
 		HomologyPlot.removeScores();
 
@@ -46,20 +42,18 @@ var HomologyMode = {
 		// Just quit to comparison view instead
 		HomologySelectionMode.quit();
 
-
-		MarkerSlider.makeVisible(true)
+		MarkerSlider.makeVisible(true);
 
 		haplo_layer.draw();
 	},
 
-	redraw: function(){
+	redraw() {
 		HomologyButtons.updateHomologyInputs();
 
-		HomologyPlot.plotScoresOnMarkerScale
-		(
+		HomologyPlot.plotScoresOnMarkerScale(
 			HomologyPlot.plots[HomologyMode.type],
 			HomologyMode.minexten,
 			HomologyMode.minscore
 		);
-	},
-}
+	}
+};

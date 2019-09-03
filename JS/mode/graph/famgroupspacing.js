@@ -1,60 +1,65 @@
-
-var FamSpacing = {
-
-
-	init(offset, max_width, debug = false){
+const FamSpacing = {
+	init(offset, max_width, debug = false) {
 		max_width = max_width || stage.getWidth();
 		offset = offset || 0;
 
-		var placements = FamSpacing.__getFamBounds();
+		const placements = FamSpacing.__getFamBounds();
 
 		FamSpacing.__performPacking(placements, max_width, debug);
 		FamSpacing.__setDerivedPositions(placements, offset);
 	},
 
 	// Accessible to node drag functions too
-	getBoundsForFamily: function(fgroup){
+	getBoundsForFamily(fgroup) {
 		// Get group width
-		var min_x = 999999999, min_y = 9999999,
-			max_x = 0, max_y = 0;
+		let min_x = 999999999,
+			min_y = 9999999,
+			max_x = 0,
+			max_y = 0;
 
-		var title_y = fgroup.fam_title_text.getY();
+		const title_y = fgroup.fam_title_text.getY();
 
-		uniqueGraphOps.foreachnode(function(nid, node)
-		{
-			if (node.graphics === null){
-				console.log("Skipping individual", nid, " due to no graphics and deleting them");
+		uniqueGraphOps.foreachnode((nid, node) => {
+			if (node.graphics === null) {
+				console.log('Skipping individual', nid, ' due to no graphics and deleting them');
 				uniqueGraphOps.deleteNode(nid, fgroup.id);
 
-				if (familyMapOps.percExists(nid, fgroup.id)){
+				if (familyMapOps.percExists(nid, fgroup.id)) {
 					familyMapOps.removePerc(nid, fgroup.id);
 				}
 				return -1;
 			}
 
-			var xer = node.graphics.getX(),
-				yer = node.graphics.getY()
+			const xer = node.graphics.getX(),
+				  yer = node.graphics.getY();
 
-			var l_offs = nodeSize,
-				r_offs = l_offs;
+			const l_offs = nodeSize,
+				  r_offs = l_offs;
 
-			if (min_x > xer - l_offs  ){ min_x = xer - l_offs; }
-			if (max_x < xer + r_offs  ){ max_x = xer + r_offs; }		
-			if (min_y > yer - nodeSize){ min_y = yer - nodeSize; }		
-			if (max_y < yer + nodeSize){ max_y = yer + nodeSize; }
-
+			if (min_x > xer - l_offs) {
+				min_x = xer - l_offs;
+			}
+			if (max_x < xer + r_offs) {
+				max_x = xer + r_offs;
+			}
+			if (min_y > yer - nodeSize) {
+				min_y = yer - nodeSize;
+			}
+			if (max_y < yer + nodeSize) {
+				max_y = yer + nodeSize;
+			}
 		}, fgroup.id);
 
-//		var min_y = title_y
+		//		var min_y = title_y
 
-		var pos = fgroup.getAbsolutePosition();
-		var w = max_x - min_x,
-			h = max_y - min_y;
+		const pos = fgroup.getAbsolutePosition();
+		const w = max_x - min_x,
+			  h = max_y - min_y;
 
-		var rect = new Kinetic.Rect({
-			x:min_x + pos.x,
-			y:min_y + pos.y,
-			stroke:"red",
+		const rect = new Kinetic.Rect({
+			x: min_x + pos.x,
+			y: min_y + pos.y,
+			stroke: 'red',
 			strokeWidth: 2,
 			width: w,
 			height: h
@@ -67,82 +72,73 @@ var FamSpacing = {
 
 		main_layer.add(rect);
 
-		return {rect: rect, minpos: { x: min_x, y: min_y}};
+		return { rect: rect, minpos: { x: min_x, y: min_y } };
 	},
 
+	__getFamBounds() {
+		const fam_placements = {}; // fid -> [position, width]
 
-	__getFamBounds : function()
-	{
-		var fam_placements = {}; // fid -> [position, width]
-
-		uniqueGraphOps.foreachfam(function(fid,fgr)
-		{
+		uniqueGraphOps.foreachfam((fid, fgr) => {
 			fgr.group.hide();
 			fam_placements[fid] = FamSpacing.getBoundsForFamily(fgr.group);
-
 		});
 		return fam_placements;
 	},
 
-
-	__performPacking : function(fam_placements, max_width, debug = false)
-	{
-		var start_x = nodeSize,
+	__performPacking(fam_placements, max_width, debug = false) {
+		let start_x = nodeSize,
 			start_y = 50;
 
-		var total_width = max_width,
-			ma_rect;
+		const total_width = max_width;
+		let ma_rect;
 
-		if (debug){
+		if (debug) {
 			ma_rect = new Kinetic.Rect({
-				x:total_width,
-				y:0,
-				stroke:"blue",
+				x: total_width,
+				y: 0,
+				stroke: 'blue',
 				strokeWidth: 2,
 				width: 5,
 				height: stage.getHeight()
 			});
-			
+
 			main_layer.add(ma_rect);
 			main_layer.draw();
 		}
 
-		for (var group_id in fam_placements)
-		{
-			var group = fam_placements[group_id].rect;
+		for (const group_id in fam_placements) {
+			const group = fam_placements[group_id].rect;
 
-			group.setX( start_x );
-			group.setY( start_y );
+			group.setX(start_x);
+			group.setY(start_y);
 
 			while (true) {
-				var any_collision = false;
+				let any_collision = false;
 
-				for (var second_id in fam_placements)
-				{
-					if (group_id === second_id){
+				for (const second_id in fam_placements) {
+					if (group_id === second_id) {
 						continue;
 					}
 
-					var second_group = fam_placements[second_id].rect;
+					const second_group = fam_placements[second_id].rect;
 
-					if (FamSpacing.__colliding(group, second_group)){
+					if (FamSpacing.__colliding(group, second_group)) {
 						any_collision = true;
 						break;
 					}
 				}
 
-				if (any_collision){
+				if (any_collision) {
 					// shift left;
 					start_x += nodeSize * 3;
-					if (start_x + group.getWidth()*4/5 > total_width)
-					{
+					if (start_x + group.getWidth() * 4 / 5 > total_width) {
 						start_x = nodeSize * 5;
 						start_y += nodeSize * 4;
 					}
 					group.setX(start_x);
 					group.setY(start_y);
 
-					if (debug){
+					if (debug) {
 						main_layer.draw();
 						debugger;
 					}
@@ -154,25 +150,21 @@ var FamSpacing = {
 			}
 		}
 
-		if (debug){
+		if (debug) {
 			ma_rect.destroy();
 		}
-
 	},
 
+	__setDerivedPositions(fam_placements, offsetT = 0) {
+		for (const g_id in fam_placements) {
+			const group = fam_placements[g_id].rect,
+				  offset = fam_placements[g_id].minpos,
+				  offx = offset.x,
+				  offy = offset.y,
+				  fgroup = uniqueGraphOps.getFam(g_id).group;
 
-	__setDerivedPositions: function(fam_placements, offsetT = 0)
-	{
-		for (var g_id in fam_placements)
-		{
-			var group = fam_placements[g_id].rect,
-				offset  = fam_placements[g_id].minpos,
-				offx = offset.x,
-				offy = offset.y,
-				fgroup = uniqueGraphOps.getFam(g_id).group;
-
-			fgroup.setX( group.getX() + offsetT - offx );
-			fgroup.setY( group.getY() + offsetT - offy );
+			fgroup.setX(group.getX() + offsetT - offx);
+			fgroup.setY(group.getY() + offsetT - offy);
 			fgroup.show();
 
 			//Remove rects after ananlyis
@@ -180,30 +172,33 @@ var FamSpacing = {
 		}
 	},
 
-	__colliding: function(r1,r2){
-	 	var spacing = nodeSize * 2 ;
+	__colliding(r1, r2) {
+		const spacing = nodeSize * 2;
 
-		var rect1 = {x: r1.getX(), y: r1.getY(), 
-			width: r1.getWidth() + spacing, 
+		const rect1 = {
+			x: r1.getX(),
+			y: r1.getY(),
+			width: r1.getWidth() + spacing,
 			height: r1.getHeight() + spacing
-		}
-		var rect2 = {x: r2.getX(), y: r2.getY(), 
-			width: r2.getWidth() + spacing, 
+		};
+		const rect2 = {
+			x: r2.getX(),
+			y: r2.getY(),
+			width: r2.getWidth() + spacing,
 			height: r2.getHeight() + spacing
-		}
+		};
 
-		if (rect1.x < rect2.x + rect2.width &&
-	   		rect1.x + rect1.width > rect2.x &&
-	   		rect1.y < rect2.y + rect2.height &&
-	   		rect1.height + rect1.y > rect2.y) {
-	    	
-	    	return true;
+		if (
+			rect1.x < rect2.x + rect2.width &&
+			rect1.x + rect1.width > rect2.x &&
+			rect1.y < rect2.y + rect2.height &&
+			rect1.height + rect1.y > rect2.y
+		) {
+			return true;
 		}
-	    return false;
+		return false;
 	}
-}
-
-
+};
 
 /*
 function spaceFamGroups2(){

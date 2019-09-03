@@ -7,6 +7,10 @@ class Simwalk extends FileFormat {
 		const haplo = {
 			id: 'sw_haplo',
 			process(haplo_text) {
+				/**
+				 * finds/loads file from input box
+				 * will be processed by galaxy
+				 */
 				Simwalk.populateFamHaploAndDesc(haplo_text, use_descent);
 			},
 			useDescent: use_descent,
