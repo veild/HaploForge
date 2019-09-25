@@ -67,11 +67,11 @@ const HomologyPlot = {
 		text += padding_marker;
 		let tmp_fam = -1;
 		for (let o = 0; o < order_index.length; o++) {
-            var index = order_index[o],
-				fid = ordering[index];
+			let index = order_index[o];
+			let fid = ordering[index];
 
             const f_id = fid.split('_');
-            const fid = f_id[0];
+            fid = f_id[0];
             var id = f_id[1];
 
             const aff = familyMapOps.getPerc(id, fid).affected == PED.AFFECTED ? 'a' : 'u';

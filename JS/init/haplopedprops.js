@@ -146,6 +146,7 @@ const HaploPedProps = {
             let affecteds_in_gen = 0;
 
             for (const perc_id of indivs_in_gen) {
+				const perc = familyMapOps.getPerc(perc_id,fam_id);
                 if (perc.affected === PED.AFFECTED) {
 					affecteds_in_gen++;
 				}

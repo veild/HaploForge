@@ -76,8 +76,8 @@ const SelectionGraphics = {
 	},
 
 	_addInvisibleOrangeBox(pos, radius) {
-		const border_offs = 3,
-			  radius = radius || nodeSize;
+		const border_offs = 3;
+		radius = radius || nodeSize;
 
 		return new Kinetic.Rect({
 			x: pos.x - radius - border_offs,

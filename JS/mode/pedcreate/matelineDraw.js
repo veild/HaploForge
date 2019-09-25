@@ -85,7 +85,7 @@ class MatelineDraw extends LineDrawOps {
 			});
 		} else {
 			// Perform horizontal flip if neccesary on existing line
-			var points = this._tmpLine.getPoints();
+			let points = this._tmpLine.getPoints();
 			//console.log(points)
 
 			if (points[0] > points[6]) {
