@@ -17,7 +17,7 @@ const default_stroke_color = 'blue',
 const grid_rezY = nodeSize * 6,
 	  grid_rezX = nodeSize * 2;
 
-const HAP_DRAW_LIM = 30; // No more than 30 haplotypes on screen
+let HAP_DRAW_LIM = 30; // No more than 30 haplotypes on screen
 const HAP_MIN_DRAW = 100; // Minimum before haplos are updated on drag.
 const HAP_VERT_SPA = 10; // <-- DO NOT MODIFY
 
